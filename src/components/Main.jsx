@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TextInput from './TextInput';
 import UserDialog from './UserDialog';
+import ConfirmAction from './ConfirmAction';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -11,6 +12,9 @@ const Main = () => {
   const [postsList, setPostsList] = useState([]);
   const [formData, setFormData] = useState(initialInput);
   const [editingPost, setEditingPost] = useState(null);
+  const [confirmProps, setConfirmProps] = useState({
+    show: false,
+  });
 
   useEffect(() => {
     const savedPosts = localStorage.getItem('posts');
@@ -48,10 +52,23 @@ const Main = () => {
   };
 
   const deletePost = (deleteId) => {
-    setPostsList((prevPostsList) => {
-      const updatedPosts = prevPostsList.filter((post) => post.id !== deleteId);
-      localStorage.setItem('posts', JSON.stringify(updatedPosts));
-      return updatedPosts;
+    const post = postsList.find((post) => post.id === deleteId);
+    setConfirmProps({
+      show: true,
+      content: `Stai per eliminare per sempre il post ${post.title}. Confermi?`,
+      handleConfirmation: () => {
+        setPostsList((prevPostsList) => {
+          const updatedPosts = prevPostsList.filter(
+            (post) => post.id !== deleteId,
+          );
+          localStorage.setItem('posts', JSON.stringify(updatedPosts));
+          return updatedPosts;
+        });
+        setConfirmProps({ show: false });
+      },
+      handleCancelation: () => {
+        setConfirmProps({ show: false });
+      },
     });
   };
 
@@ -70,17 +87,30 @@ const Main = () => {
   };
 
   const handleEditDialogSubmit = (newData) => {
-    if (editingPost) {
-      // const post = postsList.find((post) => post.id === editingId);
-      const updatedPostsList = postsList.map((post) =>
-        post.id === editingPost ? { ...post, title: newData.title } : post,
-      );
+    const post = postsList.find((post) => post.id === editingPost);
+    setConfirmProps({
+      show: true,
+      title: 'Conferma Aggiornamento',
+      content: `Stai per aggiornare il post ${post.title}. Confermi?`,
+      handleConfirmation: () => {
+        const newPostsList = postsList.map((post) => {
+          if (post.id === editingPost) {
+            return {
+              ...post,
+              ...newData,
+            };
+          }
 
-      setPostsList(updatedPostsList);
-      localStorage.setItem('posts', JSON.stringify(updatedPostsList));
-      setEditingPost(null);
-      setFormData(initialInput);
-    }
+          return post;
+        });
+        setPostsList(newPostsList);
+        setEditingPost(null);
+        setConfirmProps({ show: false });
+      },
+      handleCancelation: () => {
+        setConfirmProps({ show: false });
+      },
+    });
   };
 
   return (
@@ -154,6 +184,8 @@ const Main = () => {
           handleSubmit={handleEditDialogSubmit}
           formData={postsList.find((post) => post.id === editingPost)}
         ></UserDialog>
+
+        <ConfirmAction {...confirmProps}></ConfirmAction>
       </main>
     </div>
   );
