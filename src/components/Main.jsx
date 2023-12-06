@@ -6,8 +6,25 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
 const Main = () => {
+  const categories = ['Travel', 'Business', 'Sport', 'Food', 'Education'];
+  const tags = [
+    'fun',
+    'friends',
+    'summer',
+    'enjoy',
+    'react',
+    'sevabbe',
+    'stucazz',
+    'direibastacosì',
+  ];
+
   const initialInput = {
     title: '',
+    description: '',
+    image: '',
+    category: [],
+    tags: [],
+    published: false,
   };
   const [postsList, setPostsList] = useState([]);
   const [formData, setFormData] = useState(initialInput);
@@ -34,6 +51,11 @@ const Main = () => {
       const newPost = {
         id: crypto.randomUUID(),
         title: formData.title,
+        description: formData.description,
+        image: formData.image,
+        category: formData.category,
+        tags: [...formData.tags],
+        published: formData.published,
       };
 
       setPostsList((prevPostsList) => {
@@ -113,22 +135,93 @@ const Main = () => {
     });
   };
 
+  const handleTagChange = (e, tag) => {
+    const checked = e.target.checked;
+    let updatedTags = [...formData.tags];
+
+    if (checked && !updatedTags.includes(tag)) {
+      updatedTags.push(tag);
+    } else if (!checked && updatedTags.includes(tag)) {
+      updatedTags = updatedTags.filter((t) => t !== tag);
+    }
+
+    updateFormData(updatedTags, 'tags');
+  };
+
   return (
     <div>
       <main className="min-h-screen bg-gray-300 py-20">
         <div className="container mx-auto w-1/2 rounded-lg border-4 border-green-600 bg-green-300 p-7">
           {/* Form Body */}
           <form
-            className=""
+            className="flex flex-col gap-5"
             onSubmit={handleFormSubmit}
             onReset={handleFormReset}
           >
+            {/* title */}
             <TextInput
               name="title"
               placeholder="Titolo del Post"
               value={formData.title}
               onValueChange={(newValue) => updateFormData(newValue, 'title')}
             ></TextInput>
+
+            {/* description */}
+            <TextInput
+              name="description"
+              placeholder="Descrizione"
+              value={formData.description}
+              onValueChange={(newValue) =>
+                updateFormData(newValue, 'description')
+              }
+            ></TextInput>
+
+            {/* image */}
+            <TextInput
+              name="image"
+              placeholder="URL Immagine"
+              value={formData.image}
+              onValueChange={(newValue) => updateFormData(newValue, 'image')}
+            ></TextInput>
+
+            {/* published */}
+            <TextInput
+              name="published"
+              label="Published"
+              type="checkbox"
+              value={formData.published}
+              onValueChange={(newValue) =>
+                updateFormData(newValue, 'published')
+              }
+            ></TextInput>
+
+            {/* category */}
+            <select
+              value={formData.category}
+              onChange={(e) => updateFormData(e.target.value, 'category')}
+            >
+              <option value="">Seleziona una categoria</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            {/* tags */}
+            <div className="flex gap-4">
+              {tags.map((tag, index) => (
+                <label key={index}>
+                  <input
+                    type="checkbox"
+                    checked={formData.tags.includes(tag)}
+                    onChange={(e) => handleTagChange(e, tag)}
+                  />
+
+                  {tag}
+                </label>
+              ))}
+            </div>
 
             {/* Form Buttons */}
             <div className="mt-5 flex gap-6">
@@ -156,7 +249,32 @@ const Main = () => {
                   key={post.id}
                   className="flex w-full justify-between border-b-2 border-gray-900 px-2 py-4 text-2xl font-bold"
                 >
-                  {post.title}
+                  <div>
+                    <p>
+                      <span className="text-red-500">Title:</span> {post.title}
+                    </p>
+                    <p>
+                      <span className="text-red-500">Description:</span>{' '}
+                      {post.description}
+                    </p>
+                    <p>
+                      <span className="text-red-500">Image:</span> {post.image}
+                    </p>
+                    <p>
+                      <span className="text-red-500">Category:</span>{' '}
+                      {post.category}
+                    </p>
+                    <p>
+                      <span className="text-red-500">Tags:</span>{' '}
+                      {post.tags.map((tag, index) => (
+                        <span key={index}>{tag}, </span>
+                      ))}
+                    </p>
+                    <p>
+                      <span className="text-red-500">Published:</span>{' '}
+                      {post.published ? 'Yes' : 'No'}
+                    </p>
+                  </div>
                   <div className="flex gap-2">
                     <button className="duration-150 hover:scale-125">
                       <EditIcon

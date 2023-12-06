@@ -10,6 +10,11 @@ const TextInput = ({
 }) => {
   const handleInputChange = (e) => {
     let newValue = e.target.value;
+
+    if (type === 'checkbox') {
+      newValue = e.target.checked;
+    }
+
     onValueChange(newValue);
   };
 
@@ -23,6 +28,10 @@ const TextInput = ({
         name={title}
         placeholder={placeholder}
         id={title + '_input'}
+        {...{
+          value: type !== 'checkbox' ? value : undefined,
+          checked: type === 'checkbox' ? value : undefined,
+        }}
         className="w-full border-2 px-3 py-4"
         value={value}
         onChange={handleInputChange}
