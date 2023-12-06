@@ -105,6 +105,11 @@ const Main = () => {
 
     setFormData({
       title: post.title,
+      description: post.description,
+      image: post.image,
+      category: post.category,
+      tags: [...formData.tags],
+      published: post.published,
     });
   };
 
@@ -301,6 +306,8 @@ const Main = () => {
           handleCancel={() => setEditingPost(null)}
           handleSubmit={handleEditDialogSubmit}
           formData={postsList.find((post) => post.id === editingPost)}
+          categories={categories}
+          tags={tags}
         ></UserDialog>
 
         <ConfirmAction {...confirmProps}></ConfirmAction>

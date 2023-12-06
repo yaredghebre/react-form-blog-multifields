@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import TextInput from './TextInput';
 
-const UserDialog = ({ show, handleCancel, handleSubmit, formData }) => {
+const UserDialog = ({
+  show,
+  handleCancel,
+  handleSubmit,
+  formData,
+  categories,
+  tags,
+}) => {
   const [internalData, setInternalData] = useState({ ...formData });
 
   useEffect(() => {
@@ -16,6 +23,19 @@ const UserDialog = ({ show, handleCancel, handleSubmit, formData }) => {
     e.preventDefault();
     handleSubmit(internalData);
   };
+
+  const handleTagChange = (e, tag) => {
+    const checked = e.target.checked;
+    let updatedTags = [...internalData.tags];
+
+    if (checked && !updatedTags.includes(tag)) {
+      updatedTags.push(tag);
+    } else if (!checked && updatedTags.includes(tag)) {
+      updatedTags = updatedTags.filter((t) => t !== tag);
+    }
+
+    updateFormData(updatedTags, 'tags');
+  };
   return (
     <div
       className={
@@ -24,7 +44,7 @@ const UserDialog = ({ show, handleCancel, handleSubmit, formData }) => {
       }
     >
       {/* finestra dialog */}
-      <div className="max-h-screen w-96 bg-white shadow-2xl">
+      <div className="min-w-96 max-h-screen bg-white shadow-2xl">
         {/* titolo */}
         <div className="border-b px-4 py-3 text-xl">Modifica Post</div>
 
@@ -42,6 +62,57 @@ const UserDialog = ({ show, handleCancel, handleSubmit, formData }) => {
               value={internalData.title ?? ''}
               onValueChange={(newValue) => updateFormData(newValue, 'title')}
             ></TextInput>
+
+            <TextInput
+              name="description"
+              placeholder="Descrizione del post"
+              value={internalData.description ?? ''}
+              onValueChange={(newValue) =>
+                updateFormData(newValue, 'description')
+              }
+            ></TextInput>
+
+            <TextInput
+              name="image"
+              placeholder="Immagine del post"
+              value={internalData.image ?? ''}
+              onValueChange={(newValue) => updateFormData(newValue, 'image')}
+            ></TextInput>
+
+            <select
+              value={internalData.category}
+              onChange={(e) => updateFormData(e.target.value, 'category')}
+            >
+              <option value="">Seleziona una categoria</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            {/* Tags */}
+            {/* <div className="flex gap-4">
+              {tags.map((tag, index) => (
+                <label key={index}>
+                  <input
+                    type="checkbox"
+                    checked={internalData.tags.includes(tag)}
+                    onChange={(e) => handleTagChange(e, tag)}
+                  />
+                  {tag}
+                </label>
+              ))}
+            </div> */}
+
+            <label>
+              <input
+                type="checkbox"
+                checked={internalData.published}
+                onChange={(e) => updateFormData(e.target.checked, 'published')}
+              />
+              Published
+            </label>
           </form>
         </div>
 
