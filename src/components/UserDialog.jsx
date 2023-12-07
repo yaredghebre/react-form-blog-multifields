@@ -9,10 +9,10 @@ const UserDialog = ({
   categories,
   tags,
 }) => {
-  const [internalData, setInternalData] = useState({ ...formData });
+  const [internalData, setInternalData] = useState({ ...formData, tags: [] });
 
   useEffect(() => {
-    setInternalData({ ...formData });
+    setInternalData({ ...internalData, tags: internalData.tags || [] });
   }, [formData]);
 
   const updateFormData = (newValue, fieldName) => {
@@ -92,18 +92,21 @@ const UserDialog = ({
             </select>
 
             {/* Tags */}
-            {/* <div className="flex gap-4">
+            <div className="flex gap-4">
               {tags.map((tag, index) => (
                 <label key={index}>
                   <input
                     type="checkbox"
-                    checked={internalData.tags.includes(tag)}
+                    // checked={internalData.tags.includes(tag)}
+                    checked={
+                      internalData.tags && internalData.tags.includes(tag)
+                    }
                     onChange={(e) => handleTagChange(e, tag)}
                   />
                   {tag}
                 </label>
               ))}
-            </div> */}
+            </div>
 
             <label>
               <input

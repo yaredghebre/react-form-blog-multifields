@@ -271,9 +271,10 @@ const Main = () => {
                     </p>
                     <p>
                       <span className="text-red-500">Tags:</span>{' '}
-                      {post.tags.map((tag, index) => (
-                        <span key={index}>{tag}, </span>
-                      ))}
+                      {post.tags &&
+                        post.tags.map((tag, index) => (
+                          <span key={index}>{tag}, </span>
+                        ))}
                     </p>
                     <p>
                       <span className="text-red-500">Published:</span>{' '}
